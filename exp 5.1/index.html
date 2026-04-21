@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mongoose CRUD</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Mongoose CRUD — Product Catalog</h1>
+  <section>
+    <h2>Create Product</h2>
+    <input type="text"   id="c-name"  placeholder="Product Name">
+    <input type="number" id="c-price" placeholder="Price">
+    <select id="c-cat">
+      <option value="">Select Category</option>
+      <option>Electronics</option>
+      <option>Clothing</option>
+      <option>Appliances</option>
+      <option>Sports</option>
+      <option>Home</option>
+    </select>
+    <input type="number" id="c-stock" placeholder="Stock" value="0">
+    <button onclick="createProduct()">Save</button>
+    <p id="c-error" class="error"></p>
+  </section>
+  <section>
+    <h2>All Products</h2>
+    <input type="text" id="r-search" placeholder="Search..." oninput="renderTable()">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>In Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </section>
+  <section id="update-section" style="display:none">
+    <h2>Update Product</h2>
+    <input type="hidden" id="u-id">
+    <input type="text"   id="u-name"  placeholder="Product Name">
+    <input type="number" id="u-price" placeholder="Price">
+    <select id="u-cat">
+      <option>Electronics</option>
+      <option>Clothing</option>
+      <option>Appliances</option>
+      <option>Sports</option>
+      <option>Home</option>
+    </select>
+    <input type="number" id="u-stock" placeholder="Stock">
+    <button onclick="updateProduct()">Update</button>
+    <button onclick="cancelUpdate()">Cancel</button>
+    <p id="u-error" class="error"></p>
+  </section>
+  <script src="app.js"></script>
+</body>
+</html>

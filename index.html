@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment 5</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <nav>
+    <span class="nav-title">Experiment 5</span>
+    <div class="nav-links">
+      <a onclick="showExp(1)" id="nav-1" class="active">5.1</a>
+      <a onclick="showExp(2)" id="nav-2">5.2</a>
+      <a onclick="showExp(3)" id="nav-3">5.3</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════
+       EXP 5.1 — Mongoose CRUD
+  ═══════════════════════════ -->
+  <div id="exp-1" class="exp-page">
+    <h1>Mongoose CRUD — Product Catalog</h1>
+
+    <!-- Create -->
+    <div class="card">
+      <h2>Add Product</h2>
+      <div class="form-row">
+        <input type="text"   id="c-name"  placeholder="Product Name *">
+        <input type="text"   id="c-brand" placeholder="Brand">
+      </div>
+      <div class="form-row">
+        <select id="c-cat">
+          <option value="">Select Category *</option>
+          <option>Electronics</option>
+          <option>Clothing</option>
+          <option>Appliances</option>
+          <option>Sports</option>
+          <option>Home</option>
+        </select>
+        <input type="number" id="c-price" placeholder="Price (₹) *" min="0">
+        <input type="number" id="c-stock" placeholder="Stock" min="0" value="0">
+      </div>
+      <p class="error" id="c-error"></p>
+      <button class="btn btn-blue" onclick="p1_create()">+ Save Document</button>
+    </div>
+
+    <!-- Read -->
+    <div class="card">
+      <h2>All Products — <span id="p1-count">0</span> Documents</h2>
+      <div class="form-row" style="margin-bottom:12px">
+        <input type="text" id="p1-search" placeholder="Search..." oninput="p1_render()">
+        <select id="p1-cat" onchange="p1_render()">
+          <option value="">All Categories</option>
+          <option>Electronics</option>
+          <option>Clothing</option>
+          <option>Appliances</option>
+          <option>Sports</option>
+          <option>Home</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Category</th><th>Brand</th><th>Price</th><th>Stock</th><th>inStock</th><th>Action</th></tr>
+          </thead>
+          <tbody id="p1-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Update section -->
+    <div class="card" id="p1-update-card" style="display:none">
+      <h2>Update Product</h2>
+      <input type="hidden" id="u-id">
+      <div class="form-row">
+        <input type="text"   id="u-name"  placeholder="Product Name *">
+        <input type="text"   id="u-brand" placeholder="Brand">
+      </div>
+      <div class="form-row">
+        <select id="u-cat">
+          <option>Electronics</option><option>Clothing</option>
+          <option>Appliances</option><option>Sports</option><option>Home</option>
+        </select>
+        <input type="number" id="u-price" placeholder="Price *" min="0">
+        <input type="number" id="u-stock" placeholder="Stock" min="0">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-blue" onclick="p1_update()">Save Changes</button>
+        <button class="btn btn-gray" onclick="p1_cancelUpdate()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════
+       EXP 5.2 — Student Management
+  ═══════════════════════════ -->
+  <div id="exp-2" class="exp-page" style="display:none">
+    <h1>Student Management System</h1>
+
+    <div class="top-bar">
+      <input type="text" id="s-search" placeholder="Search students..." oninput="s_render()">
+      <button class="btn btn-blue" onclick="s_openAdd()">+ New Student</button>
+    </div>
+    <p id="s-count-label" style="font-size:.85rem;color:#555;margin-bottom:16px">0 students enrolled</p>
+
+    <div id="s-list"></div>
+
+    <!-- Modal -->
+    <div id="s-overlay" onclick="s_closeModal()"></div>
+    <div id="s-modal">
+      <h2 id="s-modal-title">New Student</h2>
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="s-name" placeholder="e.g. John Doe">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Roll Number *</label>
+          <input type="number" id="s-roll" placeholder="e.g. 1" min="1">
+        </div>
+        <div class="form-group">
+          <label>Grade</label>
+          <select id="s-grade">
+            <option value="">— Select —</option>
+            <option>A</option><option>B</option><option>C</option><option>D</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="s-email" placeholder="student@school.edu">
+      </div>
+      <p class="error" id="s-error"></p>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn btn-gray" onclick="s_closeModal()">Cancel</button>
+        <button class="btn btn-blue" id="s-submit-btn" onclick="s_submit()">Add Student</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════
+       EXP 5.3 — Nested Schema
+  ═══════════════════════════ -->
+  <div id="exp-3" class="exp-page" style="display:none">
+    <h1>Product Catalog — Nested Schema</h1>
+
+    <!-- Tabs inside 5.3 -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('products')">Products</button>
+      <button class="tab-btn" onclick="showTab('schema')">Schema Code</button>
+      <button class="tab-btn" onclick="showTab('aggregation')">Aggregation</button>
+      <button class="tab-btn" onclick="showTab('stock')">Stock Management</button>
+    </div>
+
+    <!-- Products Tab -->
+    <div id="tab-products">
+      <div id="p3-stats" class="stats"></div>
+      <div class="card">
+        <h2>Add New Product</h2>
+        <div class="form-row">
+          <input type="text"   id="p3-name"  placeholder="Product Name *">
+          <input type="text"   id="p3-brand" placeholder="Brand">
+          <select id="p3-cat">
+            <option value="">Category *</option>
+            <option>Electronics</option><option>Clothing</option>
+            <option>Appliances</option><option>Sports</option><option>Home</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <input type="number" id="p3-price"  placeholder="Price (₹) *" min="0">
+          <input type="number" id="p3-rating" placeholder="Rating (0-5)" min="0" max="5" step="0.1">
+          <input type="text"   id="p3-desc"   placeholder="Description">
+        </div>
+        <div class="nested-box">
+          <p class="nested-label">Variant (Nested Sub-Document)</p>
+          <div class="form-row">
+            <input type="text"   id="p3-sku"   placeholder="SKU *">
+            <input type="text"   id="p3-color" placeholder="Color">
+            <input type="text"   id="p3-size"  placeholder="Size">
+            <input type="number" id="p3-stock" placeholder="Stock" min="0" value="0">
+          </div>
+        </div>
+        <p class="error" id="p3-error"></p>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-blue" onclick="p3_add()">+ Insert Document</button>
+          <button class="btn btn-gray" onclick="p3_reset()">Clear</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>All Products — <span id="p3-count">0</span> Documents</h2>
+        <div class="form-row" style="margin-bottom:12px">
+          <input type="text" id="p3-search" placeholder="Search..." oninput="p3_render()">
+          <select id="p3-filter-cat" onchange="p3_render()">
+            <option value="">All Categories</option>
+            <option>Electronics</option><option>Clothing</option>
+            <option>Appliances</option><option>Sports</option><option>Home</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Name</th><th>Category</th><th>Brand</th><th>Price</th><th>Rating</th><th>Variants</th><th>inStock</th><th>Action</th></tr>
+            </thead>
+            <tbody id="p3-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schema Tab -->
+    <div id="tab-schema" style="display:none">
+      <div class="card">
+        <h2>Variant Sub-Schema</h2>
+        <pre>const variantSchema = new Schema({
+  sku:   { type: String, required: true },
+  color: { type: String, default: '' },
+  size:  { type: String, default: null },
+  stock: { type: Number, default: 0, min: 0 },
+});</pre>
+      </div>
+      <div class="card">
+        <h2>Product Schema (with nested variants)</h2>
+        <pre>const productSchema = new Schema({
+  name:        { type: String, required: true, minlength: 2 },
+  category:    { type: String, required: true,
+                 enum: ['Electronics','Clothing','Appliances','Sports','Home'] },
+  brand:       { type: String, default: '' },
+  price:       { type: Number, required: true, min: 0 },
+  rating:      { type: Number, default: null, min: 0, max: 5 },
+  description: { type: String, default: '' },
+  variants:    [variantSchema],   // nested array
+  inStock:     { type: Boolean, default: false },
+}, { timestamps: true });</pre>
+      </div>
+      <div class="card">
+        <h2>Pre-Save Middleware</h2>
+        <pre>productSchema.pre('save', function(next) {
+  const total = this.variants.reduce((sum, v) => sum + v.stock, 0);
+  this.inStock = total > 0;
+  next();
+});
+
+const Product = mongoose.model('Product', productSchema);
+module.exports = Product;</pre>
+      </div>
+      <div class="card">
+        <h2>CRUD Operations</h2>
+        <pre>// CREATE
+const product = new Product({
+  name: 'iPhone 15', category: 'Electronics', price: 79999,
+  variants: [{ sku: 'IPH-BLK', color: 'Black', stock: 20 }],
+});
+await product.save();
+
+// READ
+await Product.find({});
+await Product.findById(id);
+
+// UPDATE
+await Product.findByIdAndUpdate(id,
+  { $set: { price: 89999 } },
+  { new: true, runValidators: true }
+);
+
+// DELETE
+await Product.findByIdAndDelete(id);</pre>
+      </div>
+    </div>
+
+    <!-- Aggregation Tab -->
+    <div id="tab-aggregation" style="display:none">
+      <div class="card">
+        <h2>Aggregation Pipelines</h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="btn btn-blue"   onclick="runAgg('lowStock')">Low Stock</button>
+          <button class="btn btn-gray"   onclick="runAgg('categoryRatings')">Avg Rating by Category</button>
+          <button class="btn btn-blue"   onclick="runAgg('stockSummary')">Stock Summary</button>
+          <button class="btn btn-gray"   onclick="runAgg('priceRange')">Price Range</button>
+        </div>
+        <div id="agg-pipeline-code"></div>
+        <div id="agg-output"></div>
+      </div>
+      <div class="card">
+        <h2>How Aggregation Works</h2>
+        <pre>const result = await Product.aggregate([
+  { $unwind: "$variants" },
+  { $match: { "variants.stock": { $lt: 10 } } },
+  { $group: {
+      _id:       "$category",
+      avgRating: { $avg: "$rating" },
+      count:     { $sum: 1 },
+  }},
+  { $sort: { avgRating: -1 } },
+]);</pre>
+      </div>
+    </div>
+
+    <!-- Stock Tab -->
+    <div id="tab-stock" style="display:none">
+      <div class="card">
+        <h2>Update Variant Stock</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Select Product</label>
+            <select id="s3-product" onchange="p3_loadVariants()">
+              <option value="">— Select Product —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Select Variant (SKU)</label>
+            <select id="s3-variant"><option value="">— Select Variant —</option></select>
+          </div>
+          <div class="form-group">
+            <label>New Stock Qty</label>
+            <input type="number" id="s3-qty" placeholder="e.g. 50" min="0">
+          </div>
+        </div>
+        <button class="btn btn-blue" onclick="p3_updateStock()">Update Stock</button>
+      </div>
+      <div class="card">
+        <h2>All Variants — Stock Levels</h2>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr><th>Product</th><th>SKU</th><th>Category</th><th>Color/Size</th><th>Stock</th><th>Status</th></tr>
+            </thead>
+            <tbody id="p3-stock-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Stock Update Code</h2>
+        <pre>// Update stock for a specific variant
+await Product.findByIdAndUpdate(
+  productId,
+  { $set: { "variants.$.stock": newQty } },
+  { new: true }
+);
+
+// Find low-stock variants
+await Product.find({ "variants.stock": { $lt: 10 } });
+
+// Increment stock
+await Product.updateOne(
+  { "variants.sku": "IPH-001" },
+  { $inc: { "variants.$.stock": +50 } }
+);</pre>
+      </div>
+    </div>
+
+  </div><!-- /exp-3 -->
+
+  <div id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <h1>Student Management System</h1>
+    <div class="top-bar">
+      <input type="text" id="search" placeholder="Search students...">
+      <button onclick="openAddModal()">+ New Student</button>
+    </div>
+    <p id="count-label">0 students enrolled</p>
+    <div id="student-list"></div>
+  </div>
+  <div id="overlay" onclick="closeModal()"></div>
+  <div id="modal">
+    <h2 id="modal-title">New Student</h2>
+    <div class="form-group">
+      <label>Full Name *</label>
+      <input type="text" id="f-name" placeholder="e.g. John Doe">
+    </div>
+    <div class="form-group">
+      <label>Roll Number *</label>
+      <input type="number" id="f-roll" placeholder="e.g. 1" min="1">
+    </div>
+    <div class="form-group">
+      <label>Grade</label>
+      <select id="f-grade">
+        <option value="">— Select —</option>
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="f-email" placeholder="student@school.edu">
+    </div>
+    <p id="form-error"></p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save"   onclick="submitForm()">Add Student</button>
+    </div>
+  </div>
+  <div id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: sans-serif;
+  padding: 24px;
+  background: #f4f6f9;
+  color: #333;
+}
+h1 {
+  margin-bottom: 24px;
+  font-size: 1.4rem;
+}
+h2 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+section {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+input, select {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  margin-right: 8px;
+  margin-bottom: 10px;
+}
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-right: 6px;
+}
+button.save   { background: #00c07f; color: #fff; }
+button.edit   { background: #d97706; color: #fff; }
+button.delete { background: #e53e3e; color: #fff; }
+button.cancel { background: #ccc; color: #333; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.88rem;
+}
+th, td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+}
+th {
+  background: #f8f8f8;
+  font-weight: 600;
+}
+tr:hover { background: #fafafa; }
+.in-stock  { color: #00c07f; font-weight: 700; }
+.out-stock { color: #e53e3e; font-weight: 700; }
+.error     { color: #e53e3e; font-size: 0.82rem; margin-top: 6px; }

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Catalog — Nested Schema</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>📦 Product Catalog — Nested Schema</h1>
+  <p>MongoDB · Mongoose · Nested Schema · Aggregation · Stock Management</p>
+</header>
+
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('products')">Products</button>
+    <button class="tab-btn" onclick="showTab('schema')">Schema Code</button>
+    <button class="tab-btn" onclick="showTab('aggregation')">Aggregation</button>
+    <button class="tab-btn" onclick="showTab('stock')">Stock Management</button>
+  </div>
+
+  <!-- TAB 1: PRODUCTS -->
+  <div id="tab-products">
+
+    <div id="stats-row" class="stats"></div>
+
+    <!-- Add Product Form -->
+    <div class="card">
+      <h2>Add New Product</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Product Name *</label>
+          <input type="text" id="f-name" placeholder="e.g. iPhone 15">
+        </div>
+        <div class="form-group">
+          <label>Brand</label>
+          <input type="text" id="f-brand" placeholder="e.g. Apple">
+        </div>
+        <div class="form-group">
+          <label>Category *</label>
+          <select id="f-category">
+            <option value="">— Select —</option>
+            <option>Electronics</option>
+            <option>Clothing</option>
+            <option>Appliances</option>
+            <option>Sports</option>
+            <option>Home</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Price (₹) *</label>
+          <input type="number" id="f-price" placeholder="e.g. 79999" min="0">
+        </div>
+        <div class="form-group">
+          <label>Rating (0–5)</label>
+          <input type="number" id="f-rating" placeholder="e.g. 4.5" min="0" max="5" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" id="f-desc" placeholder="Short description">
+        </div>
+      </div>
+
+      <div class="nested-box">
+        <p class="nested-label">Variant (Nested Sub-Document)</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>SKU *</label>
+            <input type="text" id="f-sku" placeholder="e.g. IPH-001">
+          </div>
+          <div class="form-group">
+            <label>Color</label>
+            <input type="text" id="f-color" placeholder="e.g. Black">
+          </div>
+          <div class="form-group">
+            <label>Size</label>
+            <input type="text" id="f-size" placeholder="e.g. 256GB">
+          </div>
+          <div class="form-group">
+            <label>Stock *</label>
+            <input type="number" id="f-stock" placeholder="e.g. 50" min="0" value="0">
+          </div>
+        </div>
+      </div>
+
+      <p class="error" id="form-error"></p>
+      <div style="display:flex; gap:8px">
+        <button class="btn btn-blue" onclick="addProduct()">+ Insert Document</button>
+        <button class="btn btn-gray" onclick="resetForm()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Product Table -->
+    <div class="card">
+      <h2>All Products — <span id="product-count">0</span> Documents</h2>
+      <div class="form-row" style="margin-bottom:12px">
+        <div class="form-group">
+          <label>Search</label>
+          <input type="text" id="search" placeholder="Name or brand..." oninput="renderTable()">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="filter-cat" onchange="renderTable()">
+            <option value="">All</option>
+            <option>Electronics</option>
+            <option>Clothing</option>
+            <option>Appliances</option>
+            <option>Sports</option>
+            <option>Home</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Name</th><th>Category</th><th>Brand</th>
+              <th>Price</th><th>Rating</th><th>Variants</th><th>inStock</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="product-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: SCHEMA -->
+  <div id="tab-schema" style="display:none">
+    <div class="card">
+      <h2>Variant Sub-Schema</h2>
+      <pre>
+const variantSchema = new Schema({
+  sku:   { type: String, required: true },
+  color: { type: String, default: '' },
+  size:  { type: String, default: null },
+  stock: { type: Number, default: 0, min: 0 },
+});</pre>
+    </div>
+    <div class="card">
+      <h2>Product Schema (with nested variants)</h2>
+      <pre>
+const productSchema = new Schema({
+  name:        { type: String, required: true, minlength: 2 },
+  category:    { type: String, required: true,
+                 enum: ['Electronics','Clothing','Appliances','Sports','Home'] },
+  brand:       { type: String, default: '' },
+  price:       { type: Number, required: true, min: 0 },
+  rating:      { type: Number, default: null, min: 0, max: 5 },
+  description: { type: String, default: '' },
+  variants:    [variantSchema],   // ← nested array
+  inStock:     { type: Boolean, default: false },
+}, { timestamps: true });</pre>
+    </div>
+    <div class="card">
+      <h2>Pre-Save Middleware</h2>
+      <pre>
+productSchema.pre('save', function(next) {
+  const totalStock = this.variants.reduce((sum, v) => sum + v.stock, 0);
+  this.inStock = totalStock > 0;  // auto-set
+  next();
+});
+
+const Product = mongoose.model('Product', productSchema);
+module.exports = Product;</pre>
+    </div>
+    <div class="card">
+      <h2>CRUD Operations</h2>
+      <pre>
+// CREATE
+const product = new Product({
+  name: 'iPhone 15', category: 'Electronics', price: 79999,
+  variants: [{ sku: 'IPH-BLK', color: 'Black', stock: 20 }],
+});
+await product.save();
+
+// READ
+await Product.find({});
+await Product.findById(id);
+await Product.find({ category: 'Electronics' });
+
+// UPDATE
+await Product.findByIdAndUpdate(id,
+  { $set: { price: 89999 } },
+  { new: true, runValidators: true }
+);
+
+// DELETE
+await Product.findByIdAndDelete(id);</pre>
+    </div>
+  </div>
+
+  <!-- TAB 3: AGGREGATION -->
+  <div id="tab-aggregation" style="display:none">
+    <div class="card">
+      <h2>Aggregation Pipelines</h2>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px">
+        <button class="btn btn-blue"   onclick="runAgg('lowStock')">Low Stock</button>
+        <button class="btn btn-orange" onclick="runAgg('categoryRatings')">Avg Rating by Category</button>
+        <button class="btn btn-blue"   onclick="runAgg('stockSummary')">Stock Summary</button>
+        <button class="btn btn-gray"   onclick="runAgg('priceRange')">Price Range</button>
+      </div>
+      <div id="agg-pipeline-code"></div>
+      <div id="agg-output"></div>
+    </div>
+    <div class="card">
+      <h2>How Aggregation Works</h2>
+      <pre>
+const result = await Product.aggregate([
+  { $unwind: "$variants" },              // flatten array
+  { $match: { "variants.stock": { $lt: 10 } } },  // filter
+  { $group: {
+      _id:       "$category",
+      avgRating: { $avg: "$rating" },
+      count:     { $sum: 1 },
+  }},
+  { $sort: { avgRating: -1 } },          // sort
+]);</pre>
+    </div>
+  </div>
+
+  <!-- TAB 4: STOCK MANAGEMENT -->
+  <div id="tab-stock" style="display:none">
+    <div class="card">
+      <h2>Update Variant Stock</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Select Product</label>
+          <select id="s-product" onchange="loadVariants()">
+            <option value="">— Select Product —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Select Variant (SKU)</label>
+          <select id="s-variant">
+            <option value="">— Select Variant —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>New Stock Qty</label>
+          <input type="number" id="s-qty" placeholder="e.g. 50" min="0">
+        </div>
+      </div>
+      <button class="btn btn-blue" onclick="updateStock()">Update Stock</button>
+    </div>
+
+    <div class="card">
+      <h2>All Variants — Stock Levels</h2>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th><th>SKU</th><th>Category</th>
+              <th>Color / Size</th><th>Stock</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="stock-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Stock Update Code</h2>
+      <pre>
+// Update stock for a specific variant
+await Product.findByIdAndUpdate(
+  productId,
+  { $set: { "variants.$.stock": newQty } },
+  { new: true }
+);
+
+// Find low-stock variants
+await Product.find({ "variants.stock": { $lt: 10 } });
+
+// Increment stock on new shipment
+await Product.updateOne(
+  { "variants.sku": "IPH-001" },
+  { $inc: { "variants.$.stock": +50 } }
+);</pre>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
