@@ -69,4 +69,4 @@ node server.js
 > Default MongoDB connection: `mongodb://localhost:27017`
 
 ## GitHub Repository
-[https://github.com/navadeepchn-arch/Experiment-5]
+[https://github.com/navadeepchn-arch/exp5-]
