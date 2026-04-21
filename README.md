@@ -49,7 +49,6 @@ cd exp5.1
 npm install
 node server.js
 ```
-Test endpoints at `http://localhost:3000` using Postman or browser.
 
 ### Experiment 5.2 – Student Management System
 ```bash
@@ -57,7 +56,6 @@ cd exp5.2
 npm install
 node server.js
 ```
-Test endpoints at `http://localhost:3000` using Postman.
 
 ### Experiment 5.3 – Nested Schema & Aggregation
 ```bash
@@ -65,7 +63,6 @@ cd exp5.3
 npm install
 node server.js
 ```
-Test endpoints at `http://localhost:3000` using Postman.
 
 > Make sure MongoDB is running before starting any experiment.
 > Start MongoDB: open terminal and run `mongod`
